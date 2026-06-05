@@ -80,17 +80,13 @@ func (r *Runner) binTest(ctx context.Context, op syntax.BinTestOperator, x, y st
 	case syntax.TsNewer:
 		info1, err1 := r.stat(ctx, x)
 		info2, err2 := r.stat(ctx, y)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-		return info1.ModTime().After(info2.ModTime())
+		exists1, exists2 := err1 == nil, err2 == nil
+		return exists1 && (!exists2 || info1.ModTime().After(info2.ModTime()))
 	case syntax.TsOlder:
 		info1, err1 := r.stat(ctx, x)
 		info2, err2 := r.stat(ctx, y)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-		return info1.ModTime().Before(info2.ModTime())
+		exists1, exists2 := err1 == nil, err2 == nil
+		return exists2 && (!exists1 || info1.ModTime().Before(info2.ModTime()))
 	case syntax.TsDevIno:
 		info1, err1 := r.stat(ctx, x)
 		info2, err2 := r.stat(ctx, y)
